@@ -17,6 +17,9 @@ import { CreateItemDto } from './dto/create-item.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetUser } from 'src/auth/decorator/get-user.decorator';
 import { User } from 'src/entities/user.entity';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Role } from 'src/auth/decorator/role.decorator';
+import { UserStatus } from 'src/auth/user-status.enum';
 
 @Controller('items')
 @UseInterceptors(ClassSerializerInterceptor) // entityで設定したpasswordのレスポンスからの除外設定をここで有効にする
@@ -34,7 +37,8 @@ export class ItemsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @Role(UserStatus.PREMIUM)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async create(
     @Body() createItemDto: CreateItemDto,
     @GetUser() user: User,
